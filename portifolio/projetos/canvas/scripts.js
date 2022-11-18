@@ -1,83 +1,113 @@
-const canvas = document.getElementById('exemplo');      //referência canvas HTML
-const ctx = canvas.getContext('2d');        //cria contexto 2D para acesso ao canva;
+const canvas = document.getElementById('exemplo');
+const ctx = canvas.getContext('2d');        
 
-// const ctx = document.getElementById('exemplo').getContext('2d');         //pode ser feito dessa forma
+const centroX = 600;
+const centroY = 400;
+const orbt_sz = 250;        //raio da órbita da terra
+const orbl_sz = 30;         //raio da órbita da lua
+const orbl_sz2 = 33;
+const orbl_sz3 = 36;
+const orbl_sz4 = 39;
+const sol_sz = 50;          //tamanho do sol
+const lua_sz = 5;           //tamanho da lua
+const lua_sz2 = 3; 
+const lua_sz3 = 4;
+const lua_sz4 = 5;
+const terra_sz = 15;        //tamanho da terra
 
-ctx.fillStyle = 'rgb(200, 0, 0)';       //estilo da "caneta";
-ctx.fillRect(10,10,90,50);              //cria retângulo preenchido: x, y, largura, altura;
+const t_terra = 10;         //tempo em segundos para uma volta da terra
+const t_lua = 1;         //tempo em segundos para uma volta da lua
+const t_lua2 = 3;
+const t_lua3 = 2;
+const t_lua4 = 4;
 
-ctx.fillStyle = 'rgba(0,0,200,0.5)';
-ctx.fillRect(30,30,90,60);
+const tau = 2*Math.PI;
 
-ctx.fillStyle = 'rgba(0,200,0,1)';
-ctx.strokeRect(50,50,40,70);
+const sol = new Path2D();
+const lua = new Path2D();
+const lua2 = new Path2D();
+const lua3 = new Path2D();
+const lua4 = new Path2D();
+const terra = new Path2D();
 
-ctx.clearRect(40,40,20,30);
+function init(){
+    sol.arc(0, 0, sol_sz, 0, tau, false);
+    lua.arc(0, 0, lua_sz, 0, tau, false);
+    lua2.arc(5, 15, lua_sz2, 0, tau, false);
+    lua3.arc(10, 30, lua_sz3, 0, tau, false);
+    lua4.arc(15, 45, lua_sz4, 0, tau, false);
+    terra.arc(0, 0, terra_sz, 0, tau, false);
 
-function drawTrng(){
-    ctx.fillStyle = '#228';
-    ctx.beginPath();        //inicia definição do trajeto
-    ctx.moveTo(250,50);     //x, y, move cursor sem "riscar" canvas;
-    ctx.lineTo(300,75);     //x, y, linha coordenada atual à indicada;
-    ctx.lineTo(300,25);
-    ctx.fill();             //fecha trajeto e preenche com fillStyle atual;
+    window.requestAnimationFrame(draw);
 }
-drawTrng();
 
-function drawEmoji(){
+function draw(){
+    ctx.fillStyle = "black";
+    ctx.fillRect(0,0,1200,800);
 
-    const emoji = new Path2D();
+    ctx.save();     //salva estado atual antes do desenho;
 
-    ctx.beginPath();
-    emoji.arc(75, 175, 50, 0, 2*Math.PI, true);              //centro x, central y, raio, startAngle, endAngle, ccw
-    emoji.moveTo(110,175);
-    emoji.arc(75,175,35,0,Math.PI,false);
-    emoji.moveTo(65,165);
-    emoji.arc(60,165,5,0,Math.PI*2,true);
-    emoji.moveTo(95,165);
-    emoji.arc(90,165,5,0,Math.PI*2,true);
-    ctx.strokeStyle = 'darkOrange';
+    //sol;
+    ctx.translate(centroX,centroY);
+    ctx.fillStyle="orange";
+    ctx.fill(sol);
+    ctx.restore();
 
-    ctx.stroke(emoji);
+        //terra
+        ctx.save();
+            ctx.translate(centroX,centroY);
 
-    ctx.translate(200,-20);
-    ctx.strokeStyle = '#228';
-    ctx.stroke(emoji);
+            const time = new Date();
+
+            ctx.rotate((tau/t_terra) * time.getSeconds() + (tau/(t_terra*1000))*time.getMilliseconds() );
+            ctx.translate(orbt_sz, 0);
+
+            ctx.fillStyle = "lightblue";
+            ctx.fill(terra);
+
+            //lua
+                ctx.save();
+
+                ctx.rotate((tau/t_lua) * time.getSeconds() + (tau/(t_lua*1000))*time.getMilliseconds() );
+                ctx.translate(0, orbl_sz);
+
+                ctx.fillStyle = "red";
+                ctx.fill(lua);
+
+                ctx.restore();
+
+                ctx.save();
+
+                ctx.rotate((tau/t_lua2) * time.getSeconds() + (tau/(t_lua2*1000))*time.getMilliseconds() );
+                ctx.translate(0, orbl_sz2);
+
+                ctx.fillStyle = "green";
+                ctx.fill(lua2);
+
+                ctx.restore();
+                ctx.save();
+
+                ctx.rotate((tau/t_lua3) * time.getSeconds() + (tau/(t_lua3*1000))*time.getMilliseconds() );
+                ctx.translate(0, orbl_sz3);
+
+                ctx.fillStyle = "purple";
+                ctx.fill(lua3);
+
+                ctx.restore();
+                ctx.save();
+
+                ctx.rotate((tau/t_lua4) * time.getSeconds() + (tau/(t_lua4*1000))*time.getMilliseconds() );
+                ctx.translate(0, orbl_sz4);
+
+                ctx.fillStyle = "orange";
+                ctx.fill(lua4);
+
+                ctx.restore();
+
+
+        ctx.restore();
+
+    window.requestAnimationFrame(draw);
 }
-drawEmoji();
 
-function drawBalloon(){
-
-    const balloon = new Path2D();
-
-    ctx.beginPath();
-    balloon.moveTo(75,25);
-    balloon.quadraticCurveTo(25, 25, 25, 62.5);
-    balloon.quadraticCurveTo(25, 100, 50, 100);
-    balloon.quadraticCurveTo(50, 120, 30, 125);
-    balloon.quadraticCurveTo(60, 120, 65, 100);
-    balloon.quadraticCurveTo(125, 100, 125, 62.5);
-    balloon.quadraticCurveTo(125, 25, 75, 25);
-
-    ctx.translate(-100,60);         //x, y, relativo à posição atual
-    ctx.strokeStyle = 'darkOrange';
-    ctx.stroke(balloon);
-
-    ctx.translate(200,-20);
-    ctx.fill(balloon);
-}
-drawBalloon();
-
-function drawArcs(){
-    for(let i = 0; i < 4; i++){
-    for(let j = 0; j < 3; j++){
-    ctx.beginPath();
-    const x = 400 + j*50;
-    const y = 25 + i*50;
-    const radius = 20;
-    const startAngle = 0;
-    const endAngle = Math.PI + (Math.PI * j) / 2;
-    const ccw = i%2 !== 0;
-    }
-    }
-}
+init();
